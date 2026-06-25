@@ -14,6 +14,12 @@ make
 make test
 ```
 
+## Project layout
+
+- `include/` contains header files and shared interfaces.
+- `src/` contains C implementation files and demo entry points.
+- `tests/` contains automated test programs.
+
 ## Run
 
 ```bash

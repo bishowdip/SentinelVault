@@ -1,5 +1,5 @@
 CC := cc
-CFLAGS := -std=c11 -Wall -Wextra -Wpedantic -g -O1 -Isrc -I/opt/homebrew/opt/openssl@3/include
+CFLAGS := -std=c11 -Wall -Wextra -Wpedantic -g -O1 -Iinclude -I/opt/homebrew/opt/openssl@3/include
 LDFLAGS := -L/opt/homebrew/opt/openssl@3/lib
 LDLIBS := -lpthread -lssl -lcrypto
 
