@@ -19,6 +19,8 @@ make test
 ```bash
 ./bin/scheduler_demo
 ./bin/memory_demo
+./bin/process_demo
+./bin/permission_demo
 ./bin/sentinelvault_server 9090
 ./bin/sentinelvault_client 127.0.0.1 9090
 ```
@@ -36,13 +38,15 @@ Use `HELP` in the client for the command list.
 
 ## Automated coverage
 
-- Known FIFO and LRU hit/fault counts
+- Known FIFO, LRU, and pointer-based FIFO behavior
 - Memory CSV schema and generation
+- Fork/pipe process IPC
 - Valid and invalid authentication
 - Three-strike account lockout
 - Filename validation and path-traversal rejection
 - Protocol authentication gate
 - Create, write, chmod, encrypt, authorized read, decrypt, and delete
+- POSIX file creation, chmod, stat, and cleanup
 - Permission denial for a low-privilege user
 - Audit-chain verification
 

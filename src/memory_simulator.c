@@ -153,9 +153,62 @@ int write_memory_csv(const char *path, const int *refs, int ref_count, int frame
     return rc;
 }
 
+MemoryStats simulate_pointer_fifo(const int *refs, int ref_count, FILE *log_file) {
+    int frames[4];
+    int hits = 0;
+    int faults = 0;
+    int next = 0;
+
+    if (!refs || ref_count <= 0) return finish_stats(0, 0, 0);
+    for (int i = 0; i < 4; i++) frames[i] = -1;
+
+    if (log_file) {
+        fputs("--- Pointer based FIFO with four frames ---\n", log_file);
+        fputs("Initial frames: ", log_file);
+        print_frames(log_file, frames, 4);
+        fputc('\n', log_file);
+    }
+
+    for (const int *cursor = refs; cursor < refs + ref_count; cursor++) {
+        int page = *cursor;
+        int found = 0;
+        for (int i = 0; i < 4; i++) {
+            if (*(frames + i) == page) found = 1;
+        }
+
+        if (found) {
+            hits++;
+        } else {
+            int *replace_slot = &frames[next];
+            int evicted = *replace_slot;
+            *replace_slot = page;
+            next = (next + 1) % 4;
+            faults++;
+            if (log_file) {
+                fprintf(log_file, "Page %d loaded through pointer dereference", page);
+                if (evicted >= 0) fprintf(log_file, " after evicting %d", evicted);
+                fputs(" -> Frames: ", log_file);
+                print_frames(log_file, frames, 4);
+                fputc('\n', log_file);
+            }
+            continue;
+        }
+
+        if (log_file) {
+            fprintf(log_file, "Page %d already exists -> Frames: ", page);
+            print_frames(log_file, frames, 4);
+            fputc('\n', log_file);
+        }
+    }
+
+    return finish_stats(ref_count, hits, faults);
+}
+
 void run_memory_demo(void) {
     const int refs[] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2};
+    const int pointer_refs[] = {1, 2, 3, 4, 2, 5, 1, 6, 2, 7};
     const int count = (int)(sizeof(refs) / sizeof(refs[0]));
+    const int pointer_count = (int)(sizeof(pointer_refs) / sizeof(pointer_refs[0]));
     puts("=== TASK 2: MEMORY MANAGEMENT SIMULATION ===");
     puts("Page size: 4096 bytes\nFrames: 3\n\n--- FIFO ---");
     MemoryStats fifo = simulate_fifo(refs, count, 3, stdout);
@@ -163,6 +216,9 @@ void run_memory_demo(void) {
     puts("\n--- LRU ---");
     MemoryStats lru = simulate_lru(refs, count, 3, stdout);
     print_memory_stats("LRU", lru);
+    fputc('\n', stdout);
+    MemoryStats pointer_fifo = simulate_pointer_fifo(pointer_refs, pointer_count, stdout);
+    print_memory_stats("Pointer FIFO", pointer_fifo);
     if (write_memory_csv("task2_memory_trace.csv", refs, count, 3) == SV_OK)
         puts("\nCSV trace: task2_memory_trace.csv");
 }

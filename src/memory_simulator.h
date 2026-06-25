@@ -15,6 +15,7 @@ MemoryStats simulate_fifo(const int *refs, int ref_count, int frame_count, FILE 
 MemoryStats simulate_lru(const int *refs, int ref_count, int frame_count, FILE *log_file);
 void print_memory_stats(const char *algorithm, MemoryStats stats);
 int write_memory_csv(const char *path, const int *refs, int ref_count, int frame_count);
+MemoryStats simulate_pointer_fifo(const int *refs, int ref_count, FILE *log_file);
 void run_memory_demo(void);
 
 #endif

@@ -6,6 +6,8 @@ int main(void) {
     MemoryStats lru = simulate_lru(refs, 13, 3, NULL);
     assert(fifo.faults == 10 && fifo.hits == 3);
     assert(lru.faults == 9 && lru.hits == 4);
+    MemoryStats pointer_fifo = simulate_pointer_fifo(refs, 10, NULL);
+    assert(pointer_fifo.faults == 6 && pointer_fifo.hits == 4);
     const char *trace_path = "test_memory_trace.csv";
     assert(write_memory_csv(trace_path, refs, 13, 3) == SV_OK);
     FILE *fp = fopen(trace_path, "r");

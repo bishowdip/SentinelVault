@@ -18,3 +18,4 @@ output/
 tmp/
 test_memory_trace.csv
 task2_memory_trace.csv
+permission_demo.tmp
